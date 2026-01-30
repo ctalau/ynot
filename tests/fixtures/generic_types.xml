@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com.collections" map="c"/>
+    <class name="com.collections.Container" map="C">
+      <method name="add(Ljava/lang/Object;)Z" map="a"/>
+      <method name="get(I)Ljava/lang/Object;" map="g"/>
+      <method name="process(Ljava/util/List;)V" map="p"/>
+    </class>
+  </map>
+</yguard>

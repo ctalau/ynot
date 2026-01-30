@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com.utils" map="u"/>
+    <class name="com.utils.Parser" map="P">
+      <method name="parse()" map="p"/>
+      <method name="parse(Ljava/lang/String;)Ljava/lang/Object;" map="p"/>
+      <method name="parse(Ljava/io/InputStream;)Ljava/lang/Object;" map="p"/>
+    </class>
+  </map>
+</yguard>

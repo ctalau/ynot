@@ -1,0 +1,5 @@
+java.lang.Exception: Database error
+  at com.app.Repository.query(Unknown Source)
+  at com.app.Service.execute(Unknown Source)
+  at com.app.Controller.process(Unknown Source)
+  at com.app.Controller.handleRequest(Unknown Source)

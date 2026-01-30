@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="java.lang" map="j"/>
+    <class name="java.lang.Thread" map="T">
+      <method name="run()" map="r"/>
+    </class>
+    <package name="com.app" map="a"/>
+    <class name="com.app.Main" map="M">
+      <method name="main([Ljava/lang/String;)V" map="m"/>
+    </class>
+  </map>
+</yguard>

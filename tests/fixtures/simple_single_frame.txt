@@ -1,0 +1,2 @@
+Error: Something went wrong
+    at a.A.a (file.js:10:5)

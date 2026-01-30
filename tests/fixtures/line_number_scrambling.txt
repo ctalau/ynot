@@ -1,0 +1,2 @@
+Error: Scrambled line numbers
+    at a.S.w (scrambled.js:42:10)

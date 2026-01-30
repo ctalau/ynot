@@ -1,0 +1,2 @@
+Exception: Prefix test
+    at o/p1/p2.MyClass.t (test.js:33:22)

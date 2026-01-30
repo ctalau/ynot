@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com.ui" map="ui"/>
+    <class name="com.ui.Frame" map="F">
+      <class name="Handler" map="H">
+        <method name="onClick()" map="o"/>
+      </class>
+      <class name="Listener" map="L">
+        <method name="onEvent()" map="e"/>
+      </class>
+    </class>
+  </map>
+</yguard>

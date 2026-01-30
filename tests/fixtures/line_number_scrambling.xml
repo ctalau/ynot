@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <property name="scrambling-salt" value="12345" owner="com.app.Scrambled"/>
+  <map>
+    <package name="com.app" map="a"/>
+    <class name="com.app.Scrambled" map="S">
+      <method name="work()" map="w"/>
+    </class>
+  </map>
+</yguard>

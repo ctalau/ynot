@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com" map="c"/>
+    <package name="com.example" map="c"/>
+    <package name="com.example.app" map="e"/>
+    <package name="com.example.app.core" map="a"/>
+    <package name="com.example.app.core.impl" map="i"/>
+    <class name="com.example.app.core.impl.Worker" map="W">
+      <method name="execute()" map="e"/>
+    </class>
+  </map>
+</yguard>

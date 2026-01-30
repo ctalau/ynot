@@ -1,0 +1,2 @@
+Error in parser
+    at com.utils.Parser.parse (parser.js:42:10)

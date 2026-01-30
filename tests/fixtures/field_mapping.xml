@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com.data" map="d"/>
+    <class name="com.data.Record" map="R">
+      <method name="getValue()" map="g"/>
+      <field name="data" map="d"/>
+      <field name="timestamp" map="t"/>
+    </class>
+  </map>
+</yguard>

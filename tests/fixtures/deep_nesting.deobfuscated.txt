@@ -1,0 +1,2 @@
+Exception at deep level
+    at com.example.app.core.impl.Worker.execute (worker.js:100:5)

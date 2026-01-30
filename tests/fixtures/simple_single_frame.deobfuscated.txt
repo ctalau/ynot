@@ -1,0 +1,2 @@
+Error: Something went wrong
+    at com.example.MyClass.doSomething (file.js:10:5)

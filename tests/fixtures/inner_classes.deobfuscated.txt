@@ -1,0 +1,3 @@
+Exception: UI Error
+    at com.ui.Frame$Listener.onEvent (ui.js:100:25)
+    at com.ui.Frame$Handler.onClick (ui.js:50:10)

@@ -1,0 +1,2 @@
+Exception at deep level
+    at c.e.a.i.W.e (worker.js:100:5)

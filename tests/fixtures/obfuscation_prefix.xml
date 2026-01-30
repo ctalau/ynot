@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="original" map="o/p1/p2"/>
+    <class name="original.MyClass" map="MyClass">
+      <method name="test()" map="t"/>
+    </class>
+  </map>
+</yguard>

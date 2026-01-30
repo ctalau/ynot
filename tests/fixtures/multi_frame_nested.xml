@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com.app" map="b"/>
+    <class name="com.app.Controller" map="B">
+      <method name="handleRequest()" map="a"/>
+      <method name="process()" map="b"/>
+    </class>
+    <class name="com.app.Service" map="C">
+      <method name="execute()" map="c"/>
+    </class>
+    <class name="com.app.Repository" map="D">
+      <method name="query()" map="d"/>
+    </class>
+  </map>
+</yguard>

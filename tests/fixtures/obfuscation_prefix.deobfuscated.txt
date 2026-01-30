@@ -1,0 +1,2 @@
+Exception: Prefix test
+    at original.MyClass.test (test.js:33:22)

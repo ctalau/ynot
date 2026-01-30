@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com.example" map="a"/>
+    <class name="com.example.MyClass" map="A">
+      <method name="doSomething()" map="a"/>
+    </class>
+  </map>
+</yguard>

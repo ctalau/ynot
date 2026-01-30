@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yguard version="1.5">
+  <map>
+    <package name="com.app" map="a"/>
+    <class name="com.app.Known" map="K">
+      <method name="work()" map="w"/>
+    </class>
+  </map>
+</yguard>
