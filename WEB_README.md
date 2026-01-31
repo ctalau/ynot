@@ -120,7 +120,7 @@ export default {
 }
 ```
 
-### Tailwind Config (tailwind.config.mjs)
+### Tailwind Config (tailwind.config.cjs)
 
 Configured to scan all app and component files:
 

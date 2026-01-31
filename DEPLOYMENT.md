@@ -174,6 +174,31 @@ Fixtures are in `public/fixtures/` and should be automatically copied during bui
 
 Check browser console for errors. The app is client-side only, so JavaScript must be enabled.
 
+### Styles Not Loading (Default Browser Styling)
+
+If the UI looks unstyled in production, Tailwind/PostCSS likely did not run during the build. Verify:
+
+1. **Tailwind/PostCSS configs are present in the repo root**:
+   - `tailwind.config.cjs`
+   - `postcss.config.cjs`
+2. **Global styles are imported** in `app/layout.tsx`:
+   - `import './globals.css'`
+3. **Tailwind directives exist** in `app/globals.css`:
+   - `@tailwind base;`
+   - `@tailwind components;`
+   - `@tailwind utilities;`
+4. **Vercel build output includes generated CSS**:
+   - Look for `/_next/static/css/*.css` in the build logs or the deployed `out/` folder.
+
+Quick local sanity check:
+
+```bash
+npm install
+npm run build
+```
+
+If the CSS bundle is missing locally, Tailwind isn't being detected. Ensure the `content` globs in `tailwind.config.cjs` include `./app/**/*.{js,ts,jsx,tsx,mdx}` and `./components/**/*.{js,ts,jsx,tsx,mdx}`.
+
 ### Build Timeout
 
 Unlikely with this project, but if it happens:
