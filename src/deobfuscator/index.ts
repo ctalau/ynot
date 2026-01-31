@@ -3,15 +3,15 @@
  * Ported from YGuardLogParser.java
  */
 
-import type { StackTraceElement, ClassStruct, MethodStruct } from '../types/index.js';
-import { MappingTree } from '../mapping/parser.js';
-import { LineNumberScrambler } from './lineNumberScrambler.js';
+import type { StackTraceElement, ClassStruct, MethodStruct } from '../types/index';
+import { MappingTree } from '../mapping/parser';
+import { LineNumberScrambler } from './lineNumberScrambler';
 import {
   parseStackTraceLine,
   findFQNs,
   convertUnicodeEscapes,
   formatStackTraceElement,
-} from '../parser/stackTrace.js';
+} from '../parser/stackTrace';
 
 /**
  * Main deobfuscator class

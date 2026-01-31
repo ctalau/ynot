@@ -1,0 +1,2 @@
+com.yworks.test.Test.isEnabled|setEnabled(boolean)
+com.yworks.test.Test.Z

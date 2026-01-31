@@ -9,15 +9,15 @@ if (typeof globalThis.DOMParser === 'undefined') {
   globalThis.DOMParser = DOMParser as any;
 }
 
-import { parseMappingXml } from './mapping/parser.js';
-import { YGuardDeobfuscator } from './deobfuscator/index.js';
+import { parseMappingXml } from './mapping/parser';
+import { YGuardDeobfuscator } from './deobfuscator/index';
 
-export { parseMappingXml, MappingTree } from './mapping/parser.js';
-export { YGuardDeobfuscator } from './deobfuscator/index.js';
-export { LineNumberScrambler } from './deobfuscator/lineNumberScrambler.js';
-export * from './deobfuscator/conversion.js';
-export * from './parser/stackTrace.js';
-export * from './types/index.js';
+export { parseMappingXml, MappingTree } from './mapping/parser';
+export { YGuardDeobfuscator } from './deobfuscator/index';
+export { LineNumberScrambler } from './deobfuscator/lineNumberScrambler';
+export * from './deobfuscator/conversion';
+export * from './parser/stackTrace';
+export * from './types/index';
 
 /**
  * Convenience function to deobfuscate a stack trace

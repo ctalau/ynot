@@ -3,7 +3,7 @@
  * Ported from YGuardLogParser.java
  */
 
-import type { StackTraceElement } from '../types/index.js';
+import type { StackTraceElement } from '../types/index';
 
 /**
  * Regex patterns for parsing stack traces

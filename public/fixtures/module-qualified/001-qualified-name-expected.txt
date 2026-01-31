@@ -1,0 +1,4 @@
+yfiles.test/com.yworks.test.Test
+yfiles.test@10.0.1/com.yworks.test.Test
+app/yfiles.test@10.0.1/com.yworks.test.Test
+app//com.yworks.test.Test
