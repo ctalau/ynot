@@ -22,18 +22,18 @@ export default function FixtureSelector({ onLoadFixture }: FixtureSelectorProps)
   }
 
   return (
-    <div className="flex flex-col gap-3 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-      <h3 className="text-sm font-semibold">Load Example Fixture</h3>
-      <div className="flex gap-2 items-end">
-        <div className="flex-1">
-          <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Category</label>
+    <div className="card">
+      <h3 className="card__title">Load Example Fixture</h3>
+      <div className="card__row">
+        <div className="form-field">
+          <label className="form-label">Category</label>
           <select
             value={selectedCategory}
             onChange={(e) => {
               setSelectedCategory(e.target.value)
               setSelectedFixture('')
             }}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="select"
           >
             <option value="">Select a category...</option>
             {categories.map(cat => (
@@ -41,13 +41,13 @@ export default function FixtureSelector({ onLoadFixture }: FixtureSelectorProps)
             ))}
           </select>
         </div>
-        <div className="flex-1">
-          <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Fixture</label>
+        <div className="form-field">
+          <label className="form-label">Fixture</label>
           <select
             value={selectedFixture}
             onChange={(e) => setSelectedFixture(e.target.value)}
             disabled={!selectedCategory}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+            className="select"
           >
             <option value="">Select a fixture...</option>
             {categoryFixtures.map(fixture => (
@@ -58,13 +58,13 @@ export default function FixtureSelector({ onLoadFixture }: FixtureSelectorProps)
         <button
           onClick={handleLoad}
           disabled={!selectedFixture}
-          className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400 rounded shadow-sm disabled:cursor-not-allowed"
+          className="button button--success"
         >
           Load
         </button>
       </div>
       {selectedFixture && (
-        <p className="text-xs text-gray-600 dark:text-gray-400">
+        <p className="helper-text">
           {fixtures.find(f => f.id === selectedFixture)?.description}
         </p>
       )}

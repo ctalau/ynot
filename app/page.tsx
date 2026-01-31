@@ -157,25 +157,25 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-7xl mx-auto">
+    <main className="page">
+      <div className="container">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="page-header">
+          <h1 className="page-title">
             yNot
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="page-subtitle">
             Deobfuscate Java stack traces obfuscated by yGuard
           </p>
         </div>
 
         {/* Fixture Selector */}
-        <div className="mb-6">
+        <div className="section">
           <FixtureSelector onLoadFixture={handleLoadFixture} />
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="split-grid">
           <StackInput
             value={stackTrace}
             onChange={setStackTrace}
@@ -189,17 +189,17 @@ export default function Home() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 mb-6">
+        <div className="actions">
           <button
             onClick={handleDeobfuscate}
             disabled={isLoading || !stackTrace || !mapping}
-            className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 rounded-lg font-medium shadow-md disabled:cursor-not-allowed transition-colors"
+            className="button button--primary"
           >
             {isLoading ? 'Processing...' : 'Deobfuscate'}
           </button>
           <button
             onClick={handleClearAll}
-            className="px-6 py-3 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg font-medium shadow-md transition-colors"
+            className="button button--secondary"
           >
             Clear All
           </button>
@@ -209,17 +209,17 @@ export default function Home() {
         <ResultDisplay value={result} error={error} />
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="footer">
           <p>
             TypeScript implementation of yGuard deobfuscator. All processing happens in your browser.
           </p>
-          <p className="mt-1">
+          <p>
             Based on{' '}
             <a
               href="https://github.com/yWorks/yGuard"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="link"
             >
               yWorks/yGuard
             </a>
