@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import StackInput from '@/components/StackInput'
 import MappingInput from '@/components/MappingInput'
 import ResultDisplay from '@/components/ResultDisplay'
@@ -14,6 +14,40 @@ export default function Home() {
   const [result, setResult] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [debugInfo, setDebugInfo] = useState({
+    tailwindApplied: false,
+    stylesheetCount: 0,
+    nextCssCount: 0,
+    errorMessage: '',
+  })
+  const tailwindProbeRef = useRef<HTMLSpanElement | null>(null)
+
+  useEffect(() => {
+    try {
+      const styleSheets = Array.from(document.styleSheets)
+      const nextCssCount = styleSheets.filter((sheet) =>
+        sheet.href?.includes('/_next/static/css')
+      ).length
+      const tailwindApplied =
+        tailwindProbeRef.current !== null &&
+        window.getComputedStyle(tailwindProbeRef.current).display === 'none'
+
+      setDebugInfo({
+        tailwindApplied,
+        stylesheetCount: styleSheets.length,
+        nextCssCount,
+        errorMessage: '',
+      })
+    } catch (err) {
+      setDebugInfo({
+        tailwindApplied: false,
+        stylesheetCount: 0,
+        nextCssCount: 0,
+        errorMessage:
+          err instanceof Error ? err.message : 'Unable to inspect stylesheets',
+      })
+    }
+  }, [])
 
   const handleDeobfuscate = () => {
     if (!stackTrace || !mapping) {
@@ -139,8 +173,33 @@ export default function Home() {
               yWorks/yGuard
             </a>
           </p>
+          <details className="mt-4 rounded-lg border border-gray-200/70 bg-white/70 p-4 text-left text-xs text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-300">
+            <summary className="cursor-pointer text-sm font-semibold text-gray-700 dark:text-gray-200">
+              Debug styling info
+            </summary>
+            <div className="mt-3 space-y-1">
+              <p>
+                Tailwind applied:{' '}
+                <span className="font-medium">
+                  {debugInfo.tailwindApplied ? 'Yes' : 'No'}
+                </span>
+              </p>
+              <p>
+                Stylesheets detected:{' '}
+                <span className="font-medium">{debugInfo.stylesheetCount}</span>
+              </p>
+              <p>
+                Next CSS bundles:{' '}
+                <span className="font-medium">{debugInfo.nextCssCount}</span>
+              </p>
+              {debugInfo.errorMessage && (
+                <p className="text-red-500">Error: {debugInfo.errorMessage}</p>
+              )}
+            </div>
+          </details>
         </div>
       </div>
+      <span ref={tailwindProbeRef} className="hidden" aria-hidden="true" />
     </main>
   )
 }
