@@ -2,7 +2,7 @@
   <expose>
   </expose>
   <map>
-    <package name="com" map="yguard/A"/>
+    <package name="com" map="yguardA"/>
     <package name="com.yworks" map="A"/>
     <package name="com.yworks.test" map="A"/>
     <class name="com.yworks.test.Test" map="A"/>
