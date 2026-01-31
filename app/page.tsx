@@ -54,7 +54,14 @@ export default function Home() {
       ])
 
       if (!stackResponse.ok || !mappingResponse.ok) {
-        throw new Error('Failed to load fixture files')
+        const failures: string[] = []
+        if (!stackResponse.ok) {
+          failures.push(`stack trace (${fixture.stackPath}) [${stackResponse.status} ${stackResponse.statusText}]`)
+        }
+        if (!mappingResponse.ok) {
+          failures.push(`mapping (${fixture.mappingPath}) [${mappingResponse.status} ${mappingResponse.statusText}]`)
+        }
+        throw new Error(`Failed to load fixture files: ${failures.join('; ')}`)
       }
 
       const stackContent = await stackResponse.text()
@@ -65,7 +72,7 @@ export default function Home() {
       setResult('')
       setError('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load fixture')
+      setError(err instanceof Error ? err.message : `Failed to load fixture: ${fixture.name}`)
     } finally {
       setIsLoading(false)
     }
