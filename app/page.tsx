@@ -18,6 +18,10 @@ export default function Home() {
     tailwindApplied: false,
     stylesheetCount: 0,
     nextCssCount: 0,
+    stylesheetHrefs: [] as string[],
+    inlineStylesheetCount: 0,
+    probeBackgroundColor: '',
+    userAgent: '',
     errorMessage: '',
   })
   const tailwindProbeRef = useRef<HTMLSpanElement | null>(null)
@@ -25,17 +29,29 @@ export default function Home() {
   useEffect(() => {
     try {
       const styleSheets = Array.from(document.styleSheets)
+      const stylesheetHrefs = styleSheets
+        .map((sheet) => sheet.href)
+        .filter((href): href is string => Boolean(href))
+      const inlineStylesheetCount = styleSheets.length - stylesheetHrefs.length
       const nextCssCount = styleSheets.filter((sheet) =>
         sheet.href?.includes('/_next/static/css')
       ).length
       const tailwindApplied =
         tailwindProbeRef.current !== null &&
         window.getComputedStyle(tailwindProbeRef.current).display === 'none'
+      const probeBackgroundColor =
+        tailwindProbeRef.current !== null
+          ? window.getComputedStyle(tailwindProbeRef.current).backgroundColor
+          : ''
 
       setDebugInfo({
         tailwindApplied,
         stylesheetCount: styleSheets.length,
         nextCssCount,
+        stylesheetHrefs,
+        inlineStylesheetCount,
+        probeBackgroundColor,
+        userAgent: navigator.userAgent,
         errorMessage: '',
       })
     } catch (err) {
@@ -43,6 +59,10 @@ export default function Home() {
         tailwindApplied: false,
         stylesheetCount: 0,
         nextCssCount: 0,
+        stylesheetHrefs: [],
+        inlineStylesheetCount: 0,
+        probeBackgroundColor: '',
+        userAgent: navigator.userAgent,
         errorMessage:
           err instanceof Error ? err.message : 'Unable to inspect stylesheets',
       })
@@ -189,9 +209,33 @@ export default function Home() {
                 <span className="font-medium">{debugInfo.stylesheetCount}</span>
               </p>
               <p>
+                Inline stylesheets:{' '}
+                <span className="font-medium">{debugInfo.inlineStylesheetCount}</span>
+              </p>
+              <p>
                 Next CSS bundles:{' '}
                 <span className="font-medium">{debugInfo.nextCssCount}</span>
               </p>
+              <p>
+                Probe background:{' '}
+                <span className="font-medium">{debugInfo.probeBackgroundColor || 'n/a'}</span>
+              </p>
+              <p className="break-all">
+                User agent:{' '}
+                <span className="font-medium">{debugInfo.userAgent}</span>
+              </p>
+              {debugInfo.stylesheetHrefs.length > 0 && (
+                <div>
+                  <p className="font-semibold">Stylesheet URLs:</p>
+                  <ul className="list-disc space-y-1 pl-5">
+                    {debugInfo.stylesheetHrefs.map((href) => (
+                      <li key={href} className="break-all">
+                        {href}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {debugInfo.errorMessage && (
                 <p className="text-red-500">Error: {debugInfo.errorMessage}</p>
               )}
@@ -199,7 +243,11 @@ export default function Home() {
           </details>
         </div>
       </div>
-      <span ref={tailwindProbeRef} className="hidden" aria-hidden="true" />
+      <span
+        ref={tailwindProbeRef}
+        className="pointer-events-none absolute left-0 top-0 h-2 w-2 bg-blue-600 opacity-0"
+        aria-hidden="true"
+      />
     </main>
   )
 }
