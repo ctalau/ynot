@@ -48,7 +48,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Leading Dollar',
     description: 'Classes and methods starting with $',
     stackPath: '/fixtures/leading-dollar/001-qualified-name-input.txt',
-    mappingPath: '/fixtures/leading-dollar/mapping.xml',
+    mappingPath: '/fixtures/leading-dollar/001-qualified-name-mapping.xml',
     expectedPath: '/fixtures/leading-dollar/001-qualified-name-expected.txt',
   },
   {
@@ -57,7 +57,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Leading Dollar',
     description: 'Stack traces with $ prefixed names',
     stackPath: '/fixtures/leading-dollar/002-stacktrace-input.txt',
-    mappingPath: '/fixtures/leading-dollar/mapping.xml',
+    mappingPath: '/fixtures/leading-dollar/002-stacktrace-mapping.xml',
     expectedPath: '/fixtures/leading-dollar/002-stacktrace-expected.txt',
   },
 
@@ -68,7 +68,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Module Qualified',
     description: 'Java 9+ module-qualified names',
     stackPath: '/fixtures/module-qualified/001-qualified-name-input.txt',
-    mappingPath: '/fixtures/module-qualified/mapping.xml',
+    mappingPath: '/fixtures/module-qualified/001-qualified-name-mapping.xml',
     expectedPath: '/fixtures/module-qualified/001-qualified-name-expected.txt',
   },
   {
@@ -77,7 +77,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Module Qualified',
     description: 'Stack traces with module qualification',
     stackPath: '/fixtures/module-qualified/002-stacktrace-input.txt',
-    mappingPath: '/fixtures/module-qualified/mapping.xml',
+    mappingPath: '/fixtures/module-qualified/002-stacktrace-mapping.xml',
     expectedPath: '/fixtures/module-qualified/002-stacktrace-expected.txt',
   },
 
@@ -88,7 +88,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Prefixed',
     description: 'Names with obfuscation prefix',
     stackPath: '/fixtures/prefixed/001-qualified-name-input.txt',
-    mappingPath: '/fixtures/prefixed/mapping.xml',
+    mappingPath: '/fixtures/prefixed/001-qualified-name-mapping.xml',
     expectedPath: '/fixtures/prefixed/001-qualified-name-expected.txt',
   },
   {
@@ -97,7 +97,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Prefixed',
     description: 'Stack traces with prefix',
     stackPath: '/fixtures/prefixed/002-stacktrace-input.txt',
-    mappingPath: '/fixtures/prefixed/mapping.xml',
+    mappingPath: '/fixtures/prefixed/002-stacktrace-mapping.xml',
     expectedPath: '/fixtures/prefixed/002-stacktrace-expected.txt',
   },
 
@@ -108,7 +108,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Overload',
     description: 'Method overloading deobfuscation',
     stackPath: '/fixtures/overload/001-qualified-name-input.txt',
-    mappingPath: '/fixtures/overload/mapping.xml',
+    mappingPath: '/fixtures/overload/001-qualified-name-mapping.xml',
     expectedPath: '/fixtures/overload/001-qualified-name-expected.txt',
   },
   {
@@ -117,7 +117,7 @@ export const fixtures: FixtureMetadata[] = [
     category: 'Overload',
     description: 'Stack traces with overloaded methods',
     stackPath: '/fixtures/overload/002-stacktrace-input.txt',
-    mappingPath: '/fixtures/overload/mapping.xml',
+    mappingPath: '/fixtures/overload/002-stacktrace-mapping.xml',
     expectedPath: '/fixtures/overload/002-stacktrace-expected.txt',
   },
 ]
