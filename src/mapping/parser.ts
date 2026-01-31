@@ -11,7 +11,7 @@ import type {
   FieldStruct,
   Mapped,
   PropertyMap,
-} from '../types/index.js';
+} from '../types/index';
 
 /**
  * Mapping tree root

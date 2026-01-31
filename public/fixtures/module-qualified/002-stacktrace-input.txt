@@ -1,0 +1,8 @@
+	at yfiles.test/A.A.A.A.A()
+	at yfiles.test/A.A.A.A.A(Unknown Source)
+	at yfiles.test@10.0.1/A.A.A.A.A()
+	at yfiles.test@10.0.1/A.A.A.A.A(Unknown Source)
+	at app/yfiles.test@10.0.1/A.A.A.A.A()
+	at app/yfiles.test@10.0.1/A.A.A.A.A(Unknown Source)
+	at app//A.A.A.A.A()
+	at app//A.A.A.A.A(Unknown Source)
