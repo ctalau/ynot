@@ -96,8 +96,8 @@ export class YGuardDeobfuscator {
       }
 
       const hasNext = i < tokens.length - 1;
-      const types = hasNext ? (['package', 'class'] as const) : (['class'] as const);
-      const child = node ? this.findMappedChild(node, sb, [...types]) : null;
+      const types: Array<'package' | 'class'> = hasNext ? ['package', 'class'] : ['class'];
+      const child: TreeNode | null = node ? this.findMappedChild(node, sb, types) : null;
 
       if (!child) {
         if (buildPrefix && hasNext) {
@@ -140,19 +140,6 @@ export class YGuardDeobfuscator {
    */
   private translateStackTraceElement(ste: StackTraceElement): string {
     try {
-      // Split class name into package and class
-      const className = ste.className;
-      let packageName: string | null = null;
-      let simpleClassName: string;
-
-      const lastDot = className.lastIndexOf('.');
-      if (lastDot < 0) {
-        simpleClassName = className;
-      } else {
-        packageName = className.substring(0, lastDot);
-        simpleClassName = className.substring(lastDot + 1);
-      }
-
       const { modulePrefix, className: classNameWithoutModule } =
         this.splitModulePrefix(ste.className);
       const translation = this.translateStackTraceClassName(classNameWithoutModule);
@@ -220,7 +207,7 @@ export class YGuardDeobfuscator {
       }
 
       const hasNext = i < packageTokens.length - 1;
-      const child = classNode
+      const child: TreeNode | null = classNode
         ? this.findMappedChild(classNode, sb, ['package'])
         : null;
       if (!child) {
@@ -260,7 +247,7 @@ export class YGuardDeobfuscator {
       }
 
       const hasNext = i < classTokens.length - 1;
-      const child = classNode
+      const child: TreeNode | null = classNode
         ? this.findMappedChild(classNode, sb, ['class'])
         : null;
       if (!child) {
@@ -287,21 +274,6 @@ export class YGuardDeobfuscator {
       translatedClassName: translated,
       classNode: classNode as TreeNode<ClassStruct> | null,
     };
-  }
-
-  /**
-   * Translate method name
-   */
-  private translateMethodName(
-    translatedClassName: string,
-    obfuscatedMethodName: string
-  ): string {
-    try {
-      const classNode = this.tree.getClassNode(translatedClassName, false);
-      return this.translateMethodNameForNode(classNode, obfuscatedMethodName);
-    } catch (e) {
-      return obfuscatedMethodName;
-    }
   }
 
   private translateMethodNameForNode(
