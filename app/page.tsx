@@ -22,51 +22,82 @@ export default function Home() {
     inlineStylesheetCount: 0,
     probeBackgroundColor: '',
     userAgent: '',
+    cssBytes: 0,
+    cssHasBgBlue: false,
+    cssFetchError: '',
     errorMessage: '',
   })
   const tailwindProbeRef = useRef<HTMLSpanElement | null>(null)
 
   useEffect(() => {
-    try {
-      const styleSheets = Array.from(document.styleSheets)
-      const stylesheetHrefs = styleSheets
-        .map((sheet) => sheet.href)
-        .filter((href): href is string => Boolean(href))
-      const inlineStylesheetCount = styleSheets.length - stylesheetHrefs.length
-      const nextCssCount = styleSheets.filter((sheet) =>
-        sheet.href?.includes('/_next/static/css')
-      ).length
-      const tailwindApplied =
-        tailwindProbeRef.current !== null &&
-        window.getComputedStyle(tailwindProbeRef.current).display === 'none'
-      const probeBackgroundColor =
-        tailwindProbeRef.current !== null
-          ? window.getComputedStyle(tailwindProbeRef.current).backgroundColor
-          : ''
+    const inspectStyles = async () => {
+      try {
+        const styleSheets = Array.from(document.styleSheets)
+        const stylesheetHrefs = styleSheets
+          .map((sheet) => sheet.href)
+          .filter((href): href is string => Boolean(href))
+        const inlineStylesheetCount = styleSheets.length - stylesheetHrefs.length
+        const nextCssCount = styleSheets.filter((sheet) =>
+          sheet.href?.includes('/_next/static/css')
+        ).length
+        const tailwindApplied =
+          tailwindProbeRef.current !== null &&
+          window.getComputedStyle(tailwindProbeRef.current).display === 'none'
+        const probeBackgroundColor =
+          tailwindProbeRef.current !== null
+            ? window.getComputedStyle(tailwindProbeRef.current).backgroundColor
+            : ''
 
-      setDebugInfo({
-        tailwindApplied,
-        stylesheetCount: styleSheets.length,
-        nextCssCount,
-        stylesheetHrefs,
-        inlineStylesheetCount,
-        probeBackgroundColor,
-        userAgent: navigator.userAgent,
-        errorMessage: '',
-      })
-    } catch (err) {
-      setDebugInfo({
-        tailwindApplied: false,
-        stylesheetCount: 0,
-        nextCssCount: 0,
-        stylesheetHrefs: [],
-        inlineStylesheetCount: 0,
-        probeBackgroundColor: '',
-        userAgent: navigator.userAgent,
-        errorMessage:
-          err instanceof Error ? err.message : 'Unable to inspect stylesheets',
-      })
+        let cssBytes = 0
+        let cssHasBgBlue = false
+        let cssFetchError = ''
+
+        if (stylesheetHrefs.length > 0) {
+          try {
+            const response = await fetch(stylesheetHrefs[0])
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`)
+            }
+            const cssText = await response.text()
+            cssBytes = cssText.length
+            cssHasBgBlue = cssText.includes('bg-blue-600') || cssText.includes('.bg-blue-600')
+          } catch (err) {
+            cssFetchError = err instanceof Error ? err.message : 'Failed to fetch stylesheet'
+          }
+        }
+
+        setDebugInfo({
+          tailwindApplied,
+          stylesheetCount: styleSheets.length,
+          nextCssCount,
+          stylesheetHrefs,
+          inlineStylesheetCount,
+          probeBackgroundColor,
+          userAgent: navigator.userAgent,
+          cssBytes,
+          cssHasBgBlue,
+          cssFetchError,
+          errorMessage: '',
+        })
+      } catch (err) {
+        setDebugInfo({
+          tailwindApplied: false,
+          stylesheetCount: 0,
+          nextCssCount: 0,
+          stylesheetHrefs: [],
+          inlineStylesheetCount: 0,
+          probeBackgroundColor: '',
+          userAgent: navigator.userAgent,
+          cssBytes: 0,
+          cssHasBgBlue: false,
+          cssFetchError: '',
+          errorMessage:
+            err instanceof Error ? err.message : 'Unable to inspect stylesheets',
+        })
+      }
     }
+
+    void inspectStyles()
   }, [])
 
   const handleDeobfuscate = () => {
@@ -220,6 +251,19 @@ export default function Home() {
                 Probe background:{' '}
                 <span className="font-medium">{debugInfo.probeBackgroundColor || 'n/a'}</span>
               </p>
+              <p>
+                CSS bytes:{' '}
+                <span className="font-medium">{debugInfo.cssBytes || 'n/a'}</span>
+              </p>
+              <p>
+                CSS includes .bg-blue-600:{' '}
+                <span className="font-medium">
+                  {debugInfo.cssHasBgBlue ? 'Yes' : 'No'}
+                </span>
+              </p>
+              {debugInfo.cssFetchError && (
+                <p className="text-red-500">CSS fetch error: {debugInfo.cssFetchError}</p>
+              )}
               <p className="break-all">
                 User agent:{' '}
                 <span className="font-medium">{debugInfo.userAgent}</span>
