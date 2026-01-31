@@ -1,0 +1,20 @@
+<yguard version="1.5">
+  <expose>
+  </expose>
+  <map>
+    <package name="com" map="yguard/A"/>
+    <package name="com.yworks" map="A"/>
+    <package name="com.yworks.test" map="A"/>
+    <class name="com.yworks.test.Test" map="A"/>
+    <method class="com.yworks.test.Test" name="void run()" map="A"/>
+    <method class="com.yworks.test.Test" name="boolean isEnabled()" map="B"/>
+    <method class="com.yworks.test.Test" name="void setEnabled(boolean)" map="B"/>
+    <class name="com.yworks.test.EnclosingClass" map="B"/>
+    <class name="com.yworks.test.EnclosingClass$InnerClass" map="C"/>
+    <method class="com.yworks.test.EnclosingClass$InnerClass" name="void run()" map="A"/>
+    <class name="com.yworks.test.DollarSign" map="$A"/>
+    <method class="com.yworks.test.DollarSign" name="void run()" map="$A"/>
+    <class name="com.yworks.test.DollarSign$InnerClass" map="$C"/>
+    <method class="com.yworks.test.DollarSign$InnerClass" name="void run()" map="$A"/>
+  </map>
+</yguard>

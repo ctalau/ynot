@@ -1,0 +1,4 @@
+yfiles.test/A.A.A.A
+yfiles.test@10.0.1/A.A.A.A
+app/yfiles.test@10.0.1/A.A.A.A
+app//A.A.A.A

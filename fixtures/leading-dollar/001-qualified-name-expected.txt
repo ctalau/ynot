@@ -1,0 +1,2 @@
+com.yworks.test.DollarSign
+com.yworks.test.DollarSign$InnerClass
