@@ -23,20 +23,20 @@ export default function ResultDisplay({ value, error }: ResultDisplayProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Deobfuscated Output</label>
+    <div className="panel">
+      <div className="panel__header">
+        <label className="panel__label">Deobfuscated Output</label>
         {value && !error && (
-          <div className="flex gap-2">
+          <div className="panel__actions">
             <button
               onClick={handleCopy}
-              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="link-button"
             >
               Copy to Clipboard
             </button>
             <button
               onClick={handleDownload}
-              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="link-button"
             >
               Download
             </button>
@@ -44,15 +44,15 @@ export default function ResultDisplay({ value, error }: ResultDisplayProps) {
         )}
       </div>
       {error ? (
-        <div className="w-full h-64 p-3 border border-red-300 dark:border-red-600 rounded-lg bg-red-50 dark:bg-red-900/20">
-          <p className="text-sm text-red-600 dark:text-red-400 font-semibold mb-2">Error:</p>
-          <pre className="text-sm text-red-700 dark:text-red-300 whitespace-pre-wrap">{error}</pre>
+        <div className="error-box">
+          <p className="error-box__title">Error:</p>
+          <pre className="error-box__message">{error}</pre>
         </div>
       ) : (
         <textarea
           value={value}
           readOnly
-          className="w-full h-64 p-3 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 resize-y"
+          className="textarea textarea--output"
           placeholder="Deobfuscated output will appear here..."
           spellCheck={false}
         />
