@@ -235,7 +235,7 @@ function processMapSection(tree: MappingTree, mapElement: Element): void {
     const map = pkg.getAttribute('map');
     if (name && map) {
       const node = tree.getPackageNode(name);
-      (node.data as PackageStruct).mappedName = map.replace(/\//g, '.');
+      (node.data as PackageStruct).mappedName = map;
     }
   }
 
@@ -247,7 +247,7 @@ function processMapSection(tree: MappingTree, mapElement: Element): void {
     const map = cls.getAttribute('map');
     if (name && map) {
       const node = tree.getClassNode(name);
-      (node.data as ClassStruct).mappedName = map.replace(/\//g, '.');
+      (node.data as ClassStruct).mappedName = map;
     }
   }
 

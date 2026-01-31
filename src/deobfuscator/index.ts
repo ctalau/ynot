@@ -3,7 +3,7 @@
  * Ported from YGuardLogParser.java
  */
 
-import type { StackTraceElement, ClassStruct, MethodStruct } from '../types/index';
+import type { StackTraceElement, ClassStruct, MethodStruct, TreeNode } from '../types/index';
 import { MappingTree } from '../mapping/parser';
 import { LineNumberScrambler } from './lineNumberScrambler';
 import {
@@ -71,62 +71,68 @@ export class YGuardDeobfuscator {
    */
   private translateFQN(fqn: string): string {
     try {
-      // Handle module-qualified names (Java 9+): "module/class.method"
-      const slashIndex = fqn.indexOf('/');
-      let moduleName = '';
-      if (slashIndex > 0) {
-        moduleName = fqn.substring(0, slashIndex + 1);
-        fqn = fqn.substring(slashIndex + 1);
-      }
-
-      // Tokenize on . and $ to navigate the tree
-      const tokens = fqn.split(/[.$]/);
-      const delimiters = fqn.match(/[.$]/g) || [];
-
-      let node: any = this.tree.root;
-      const translatedTokens: string[] = [];
-
-      for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i];
-        const delimiter = i < delimiters.length ? delimiters[i] : '';
-
-        // Try to find matching node (prefer exact match on mapped name)
-        let child = this.tree.findChild(node, token, 'package', true);
-        if (!child) {
-          child = this.tree.findChild(node, token, 'class', true);
-        }
-
-        if (child) {
-          // Found a mapping - use original name
-          translatedTokens.push(child.data.name);
-          node = child;
-        } else {
-          // No mapping found - use token as-is
-          translatedTokens.push(token);
-
-          // Try to navigate anyway (for unmapped intermediate nodes)
-          const nextChild = this.tree.findChild(node, token, 'package', false);
-          if (nextChild) {
-            node = nextChild;
-          } else {
-            const classChild = this.tree.findChild(node, token, 'class', false);
-            if (classChild) {
-              node = classChild;
-            }
-          }
-        }
-
-        // Add delimiter
-        if (i < delimiters.length) {
-          translatedTokens.push(delimiter);
-        }
-      }
-
-      return moduleName + translatedTokens.join('');
+      const { modulePrefix, className } = this.splitModulePrefix(fqn);
+      const translated = this.translateObfuscatedFqn(className);
+      return modulePrefix + translated;
     } catch (e) {
       // If translation fails, return original
       return fqn;
     }
+  }
+
+  private translateObfuscatedFqn(fqn: string): string {
+    let node: TreeNode | null = this.tree.root;
+    let translated = '';
+    let sb = '';
+    let buildPrefix = true;
+    const tokens = this.tokenizeWithDelimiters(fqn, ['.', '$']);
+
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+      sb += token;
+
+      if (token === '.' || token === '$') {
+        continue;
+      }
+
+      const hasNext = i < tokens.length - 1;
+      const types = hasNext ? (['package', 'class'] as const) : (['class'] as const);
+      const child = node ? this.findMappedChild(node, sb, [...types]) : null;
+
+      if (!child) {
+        if (buildPrefix && hasNext) {
+          if (tokens[i + 1] === '.') {
+            i += 1;
+          }
+          sb += '/';
+          continue;
+        }
+
+        if (hasNext) {
+          translated += sb.replace(/\//g, '.');
+          translated += tokens.slice(i + 1).join('');
+        } else if (buildPrefix) {
+          translated += fqn;
+        } else if (node && (node.data as any).type === 'class') {
+          translated += this.translateMethodNameForNode(node, sb);
+        } else {
+          translated += sb.replace(/\//g, '.');
+        }
+        node = null;
+        break;
+      }
+
+      buildPrefix = false;
+      sb = '';
+      node = child;
+      translated += child.data.name;
+      if (hasNext) {
+        translated += tokens[i + 1];
+        i += 1;
+      }
+    }
+
+    return translated;
   }
 
   /**
@@ -147,24 +153,15 @@ export class YGuardDeobfuscator {
         simpleClassName = className.substring(lastDot + 1);
       }
 
-      // Translate package name
-      const translatedPackage = packageName ? this.translatePackageName(packageName) : null;
+      const { modulePrefix, className: classNameWithoutModule } =
+        this.splitModulePrefix(ste.className);
+      const translation = this.translateStackTraceClassName(classNameWithoutModule);
 
-      // Translate class name (including inner classes)
-      const translatedClass = this.translateClassName(
-        packageName,
-        simpleClassName,
-        translatedPackage
-      );
-
-      // Build full translated class name
-      const fullTranslatedClass = translatedPackage
-        ? translatedPackage + '.' + translatedClass
-        : translatedClass;
+      const fullTranslatedClass = modulePrefix + translation.translatedClassName;
 
       // Translate method name
-      const translatedMethod = this.translateMethodName(
-        fullTranslatedClass,
+      const translatedMethod = this.translateMethodNameForNode(
+        translation.classNode,
         ste.methodName
       );
 
@@ -179,7 +176,7 @@ export class YGuardDeobfuscator {
       }
 
       // Build filename from class name
-      const fileName = this.buildFileName(translatedClass);
+      const fileName = translation.classNode ? this.buildFileName(translation.translatedClassName) : '';
 
       // Build translated stack trace element
       const translatedSte: StackTraceElement = {
@@ -198,73 +195,98 @@ export class YGuardDeobfuscator {
     }
   }
 
-  /**
-   * Translate package name
-   */
-  private translatePackageName(packageName: string): string {
-    const tokens = packageName.split('.');
-    const translatedTokens: string[] = [];
-    let node: any = this.tree.root;
+  private translateStackTraceClassName(className: string): {
+    translatedClassName: string;
+    classNode: TreeNode<ClassStruct> | null;
+  } {
+    let classNode: TreeNode | null = this.tree.root;
+    const dollarPos = className.indexOf('$');
+    const normalizedDollarPos = dollarPos < 0 ? className.length : dollarPos;
+    const lastDot = className.substring(0, normalizedDollarPos).lastIndexOf('.');
 
-    for (const token of tokens) {
-      const child = this.tree.findChild(node, token, 'package', true);
-      if (child) {
-        translatedTokens.push(child.data.name);
-        node = child;
-      } else {
-        // No mapping found
-        translatedTokens.push(token);
-        // Try to continue navigation
-        const unmappedChild = this.tree.findChild(node, token, 'package', false);
-        if (unmappedChild) {
-          node = unmappedChild;
-        }
+    const packageName = className.substring(0, lastDot + 1);
+    const classAndInnerClassName = className.substring(lastDot + 1);
+    let translated = '';
+
+    let sb = '';
+    let buildPrefix = packageName.length > 0;
+    const packageTokens = this.tokenizeWithDelimiters(packageName, ['.']);
+    for (let i = 0; i < packageTokens.length; i++) {
+      const token = packageTokens[i];
+      sb += token;
+
+      if (token === '.') {
+        continue;
       }
-    }
 
-    return translatedTokens.join('.');
-  }
-
-  /**
-   * Translate class name (including inner classes)
-   */
-  private translateClassName(
-    packageName: string | null,
-    className: string,
-    translatedPackage: string | null
-  ): string {
-    const packageNode = this.tree.getPackageNode(translatedPackage || packageName || '');
-
-    if (className.indexOf('$') > 0) {
-      // Handle inner classes
-      const tokens = className.split('$');
-      const translatedTokens: string[] = [];
-      let node: any = packageNode;
-
-      for (const token of tokens) {
-        const child = this.tree.findChild<ClassStruct>(node, token, 'class', true);
-        if (child) {
-          translatedTokens.push(child.data.name);
-          node = child;
-        } else {
-          translatedTokens.push(token);
-          // Try to continue navigation
-          const unmappedChild = this.tree.findChild<ClassStruct>(node, token, 'class', false);
-          if (unmappedChild) {
-            node = unmappedChild;
+      const hasNext = i < packageTokens.length - 1;
+      const child = classNode
+        ? this.findMappedChild(classNode, sb, ['package'])
+        : null;
+      if (!child) {
+        if (buildPrefix && hasNext) {
+          if (packageTokens[i + 1] === '.') {
+            i += 1;
           }
+          sb += '/';
+          continue;
         }
+        classNode = null;
+        break;
       }
 
-      return translatedTokens.join('$');
-    } else {
-      // Simple class name
-      const child = this.tree.findChild<ClassStruct>(packageNode, className, 'class', true);
-      if (child) {
-        return child.data.name;
+      buildPrefix = false;
+      sb = '';
+      classNode = child;
+      translated += child.data.name;
+      if (hasNext) {
+        translated += packageTokens[i + 1];
+        i += 1;
       }
-      return className;
     }
+
+    if (buildPrefix) {
+      return { translatedClassName: className, classNode: null };
+    }
+
+    sb = '';
+    const classTokens = this.tokenizeWithDelimiters(classAndInnerClassName, ['$', '.']);
+    for (let i = 0; i < classTokens.length; i++) {
+      const token = classTokens[i];
+      sb += token;
+
+      if (token === '$' || token === '.') {
+        continue;
+      }
+
+      const hasNext = i < classTokens.length - 1;
+      const child = classNode
+        ? this.findMappedChild(classNode, sb, ['class'])
+        : null;
+      if (!child) {
+        translated += sb + classTokens.slice(i + 1).join('');
+        classNode = null;
+        sb = '';
+        break;
+      }
+
+      classNode = child;
+      translated += child.data.name;
+      sb = '';
+      if (hasNext) {
+        translated += classTokens[i + 1];
+        i += 1;
+      }
+    }
+
+    if (sb) {
+      translated += sb;
+    }
+
+    return {
+      translatedClassName: translated,
+      classNode: classNode as TreeNode<ClassStruct> | null,
+    };
   }
 
   /**
@@ -275,55 +297,59 @@ export class YGuardDeobfuscator {
     obfuscatedMethodName: string
   ): string {
     try {
-      // Get the class node (use translated class name)
       const classNode = this.tree.getClassNode(translatedClassName, false);
-
-      // Find methods with matching mapped name
-      const matchingMethods: string[] = [];
-      for (const child of classNode.children) {
-        const childData = child.data as any;
-        if (childData.type === 'method') {
-          const methodData = child.data as MethodStruct;
-          // Extract just the method name from signature (strip return type and parameters)
-          const mappedMethodName = this.extractMethodName(methodData.mappedName);
-          if (mappedMethodName === obfuscatedMethodName) {
-            // Also extract method name from original signature
-            const originalMethodName = this.extractMethodName(methodData.name);
-            matchingMethods.push(originalMethodName);
-          }
-        }
-      }
-
-      if (matchingMethods.length > 0) {
-        // If multiple methods match (overloads), join with |
-        return matchingMethods.join('|');
-      }
-
-      // No mapping found
-      return obfuscatedMethodName;
+      return this.translateMethodNameForNode(classNode, obfuscatedMethodName);
     } catch (e) {
       return obfuscatedMethodName;
     }
+  }
+
+  private translateMethodNameForNode(
+    classNode: TreeNode | null,
+    obfuscatedMethodName: string
+  ): string {
+    if (!classNode) {
+      return obfuscatedMethodName;
+    }
+
+    const matchingMethods: string[] = [];
+    for (const child of classNode.children) {
+      const childData = child.data as any;
+      if (childData.type === 'method') {
+        const methodData = child.data as MethodStruct;
+        const mappedMethodName = this.formatMethodName(methodData.mappedName);
+        if (mappedMethodName === obfuscatedMethodName) {
+          const originalMethodName = this.formatMethodName(methodData.name);
+          matchingMethods.push(originalMethodName);
+        }
+      }
+    }
+
+    if (matchingMethods.length > 0) {
+      return matchingMethods.join('|');
+    }
+
+    return obfuscatedMethodName;
   }
 
   /**
    * Extract method name from signature
    * "void methodName(args)" -> "methodName"
    */
-  private extractMethodName(signature: string): string {
-    // Remove return type (everything before last space)
-    const lastSpace = signature.lastIndexOf(' ');
-    if (lastSpace > 0) {
-      signature = signature.substring(lastSpace + 1);
+  private formatMethodName(signature: string): string {
+    let name = signature;
+    const braceIndex = name.indexOf('(');
+    if (braceIndex > 0 && name.indexOf(')') === braceIndex + 1) {
+      name = name.substring(0, braceIndex);
     }
-
-    // Remove parameters
-    const parenIndex = signature.indexOf('(');
-    if (parenIndex > 0) {
-      signature = signature.substring(0, parenIndex);
+    const spaceIndex = name.lastIndexOf(
+      ' ',
+      braceIndex < 0 ? name.length : braceIndex
+    );
+    if (spaceIndex > 0) {
+      name = name.substring(spaceIndex + 1);
     }
-
-    return signature;
+    return name;
   }
 
   /**
@@ -376,6 +402,45 @@ export class YGuardDeobfuscator {
     if (dollarIndex > 0) {
       className = className.substring(0, dollarIndex);
     }
+    const lastDot = className.lastIndexOf('.');
+    if (lastDot > -1) {
+      className = className.substring(lastDot + 1);
+    }
     return className + '.java';
   }
+
+  private splitModulePrefix(className: string): { modulePrefix: string; className: string } {
+    const lastSlash = className.lastIndexOf('/');
+    if (lastSlash >= 0) {
+      return {
+        modulePrefix: className.substring(0, lastSlash + 1),
+        className: className.substring(lastSlash + 1),
+      };
+    }
+    return { modulePrefix: '', className };
+  }
+
+  private tokenizeWithDelimiters(value: string, delimiters: string[]): string[] {
+    if (!value) {
+      return [];
+    }
+    const escaped = delimiters.map((delimiter) => `\\${delimiter}`).join('');
+    const regex = new RegExp(`([${escaped}])`);
+    return value.split(regex).filter((token) => token.length > 0);
+  }
+
+  private findMappedChild(
+    node: TreeNode,
+    name: string,
+    types: Array<'package' | 'class' | 'method' | 'field'>
+  ): TreeNode | null {
+    for (const child of node.children) {
+      const childData = child.data as any;
+      if (types.includes(childData.type) && child.data.mappedName === name) {
+        return child as TreeNode;
+      }
+    }
+    return null;
+  }
+
 }

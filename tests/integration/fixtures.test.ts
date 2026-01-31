@@ -9,11 +9,19 @@ import { deobfuscate } from '../../src/index.js';
 
 const FIXTURES_DIR = join(process.cwd(), 'fixtures');
 
+type FixtureEntry = {
+  category: string;
+  path: string;
+  mappingFile: string;
+  inputFile: string;
+  expectedFile: string;
+};
+
 /**
- * Get all fixture directories
+ * Get all fixture entries
  */
-function getFixtureDirs(): { category: string; path: string }[] {
-  const dirs: { category: string; path: string }[] = [];
+function getFixtureEntries(): FixtureEntry[] {
+  const entries: FixtureEntry[] = [];
 
   const categories = readdirSync(FIXTURES_DIR).filter((name) => {
     const path = join(FIXTURES_DIR, name);
@@ -26,7 +34,13 @@ function getFixtureDirs(): { category: string; path: string }[] {
     // Check if this category has direct test files
     const files = readdirSync(categoryPath);
     if (files.includes('mapping.xml') && files.includes('input.txt')) {
-      dirs.push({ category, path: categoryPath });
+      entries.push({
+        category,
+        path: categoryPath,
+        mappingFile: 'mapping.xml',
+        inputFile: 'input.txt',
+        expectedFile: 'expected.txt',
+      });
     } else {
       // Check for subdirectories with fixtures
       const subdirs = files.filter((name) => {
@@ -38,31 +52,56 @@ function getFixtureDirs(): { category: string; path: string }[] {
         const subdirPath = join(categoryPath, subdir);
         const subdirFiles = readdirSync(subdirPath);
         if (subdirFiles.includes('mapping.xml') && subdirFiles.includes('input.txt')) {
-          dirs.push({ category: `${category}/${subdir}`, path: subdirPath });
+          entries.push({
+            category: `${category}/${subdir}`,
+            path: subdirPath,
+            mappingFile: 'mapping.xml',
+            inputFile: 'input.txt',
+            expectedFile: 'expected.txt',
+          });
         }
       }
 
       // If no subdirectories, this category dir itself is a fixture
       if (subdirs.length === 0) {
-        continue;
+        const mappingFiles = files.filter((name) => name.endsWith('-mapping.xml'));
+        for (const mappingFile of mappingFiles) {
+          const prefix = mappingFile.replace(/-mapping\.xml$/, '');
+          const inputFile = `${prefix}-input.txt`;
+          const expectedFile = `${prefix}-expected.txt`;
+          if (files.includes(inputFile) && files.includes(expectedFile)) {
+            entries.push({
+              category: `${category}/${prefix}`,
+              path: categoryPath,
+              mappingFile,
+              inputFile,
+              expectedFile,
+            });
+          }
+        }
       }
     }
   }
 
-  return dirs;
+  return entries;
 }
 
 /**
  * Load fixture files
  */
-function loadFixture(fixturePath: string): {
+function loadFixture(
+  fixturePath: string,
+  mappingFile: string,
+  inputFile: string,
+  expectedFile: string
+): {
   mapping: string;
   input: string[];
   expected: string[];
 } {
-  const mappingPath = join(fixturePath, 'mapping.xml');
-  const inputPath = join(fixturePath, 'input.txt');
-  const expectedPath = join(fixturePath, 'expected.txt');
+  const mappingPath = join(fixturePath, mappingFile);
+  const inputPath = join(fixturePath, inputFile);
+  const expectedPath = join(fixturePath, expectedFile);
 
   const mapping = readFileSync(mappingPath, 'utf-8');
   const input = readFileSync(inputPath, 'utf-8').split('\n');
@@ -72,16 +111,21 @@ function loadFixture(fixturePath: string): {
 }
 
 describe('yGuard Deobfuscator - Fixture Tests', () => {
-  const fixtures = getFixtureDirs();
+  const fixtures = getFixtureEntries();
 
   if (fixtures.length === 0) {
     it.skip('No fixtures found', () => {});
     return;
   }
 
-  for (const { category, path } of fixtures) {
-    it(`should deobfuscate: ${category}`, () => {
-      const { mapping, input, expected } = loadFixture(path);
+  for (const fixture of fixtures) {
+    it(`should deobfuscate: ${fixture.category}`, () => {
+      const { mapping, input, expected } = loadFixture(
+        fixture.path,
+        fixture.mappingFile,
+        fixture.inputFile,
+        fixture.expectedFile
+      );
 
       // Deobfuscate each input line
       const result = deobfuscate(input, mapping) as string[];
@@ -105,10 +149,15 @@ describe('yGuard Deobfuscator - Fixture Tests', () => {
 
 describe('yGuard Deobfuscator - String Input', () => {
   it('should handle string input', () => {
-    const fixtures = getFixtureDirs();
+    const fixtures = getFixtureEntries();
     if (fixtures.length === 0) return;
 
-    const { mapping, input, expected } = loadFixture(fixtures[0].path);
+    const { mapping, input, expected } = loadFixture(
+      fixtures[0].path,
+      fixtures[0].mappingFile,
+      fixtures[0].inputFile,
+      fixtures[0].expectedFile
+    );
 
     const inputStr = input.join('\n');
     const expectedStr = expected.join('\n');
