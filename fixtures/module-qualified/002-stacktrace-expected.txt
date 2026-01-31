@@ -1,0 +1,8 @@
+	at yfiles.test/com.yworks.test.Test.run(Test.java:0)
+	at yfiles.test/com.yworks.test.Test.run(Test.java:0)
+	at yfiles.test@10.0.1/com.yworks.test.Test.run(Test.java:0)
+	at yfiles.test@10.0.1/com.yworks.test.Test.run(Test.java:0)
+	at app/yfiles.test@10.0.1/com.yworks.test.Test.run(Test.java:0)
+	at app/yfiles.test@10.0.1/com.yworks.test.Test.run(Test.java:0)
+	at app//com.yworks.test.Test.run(Test.java:0)
+	at app//com.yworks.test.Test.run(Test.java:0)
