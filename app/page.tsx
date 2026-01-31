@@ -72,14 +72,14 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <main className="min-h-screen p-4 sm:p-6 md:p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
             yNot
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
             Deobfuscate Java stack traces obfuscated by yGuard
           </p>
         </div>
@@ -89,42 +89,51 @@ export default function Home() {
           <FixtureSelector onLoadFixture={handleLoadFixture} />
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <StackInput
-            value={stackTrace}
-            onChange={setStackTrace}
-            onClear={() => setStackTrace('')}
-          />
-          <MappingInput
-            value={mapping}
-            onChange={setMapping}
-            onClear={() => setMapping('')}
-          />
+        {/* Input & Result Container - Responsive Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+          {/* Stack Trace Input - Left Column */}
+          <div className="lg:col-span-1">
+            <StackInput
+              value={stackTrace}
+              onChange={setStackTrace}
+              onClear={() => setStackTrace('')}
+            />
+          </div>
+
+          {/* Mapping Input - Middle Column */}
+          <div className="lg:col-span-1">
+            <MappingInput
+              value={mapping}
+              onChange={setMapping}
+              onClear={() => setMapping('')}
+            />
+          </div>
+
+          {/* Result Display - Right Column on Large Screens, Full Width on Small */}
+          <div className="lg:col-span-1">
+            <ResultDisplay value={result} error={error} />
+          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <button
             onClick={handleDeobfuscate}
             disabled={isLoading || !stackTrace || !mapping}
-            className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 rounded-lg font-medium shadow-md disabled:cursor-not-allowed transition-colors"
+            className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 rounded-lg font-medium shadow-md disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? 'Processing...' : 'Deobfuscate'}
           </button>
           <button
             onClick={handleClearAll}
-            className="px-6 py-3 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg font-medium shadow-md transition-colors"
+            className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg font-medium shadow-md transition-colors"
           >
             Clear All
           </button>
         </div>
 
-        {/* Result Display */}
-        <ResultDisplay value={result} error={error} />
-
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="mt-8 text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400">
           <p>
             TypeScript implementation of yGuard deobfuscator. All processing happens in your browser.
           </p>

@@ -23,20 +23,20 @@ export default function ResultDisplay({ value, error }: ResultDisplayProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 h-full">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Deobfuscated Output</label>
+        <label className="text-sm font-medium text-gray-900 dark:text-white">Deobfuscated Output</label>
         {value && !error && (
           <div className="flex gap-2">
             <button
               onClick={handleCopy}
-              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
               Copy to Clipboard
             </button>
             <button
               onClick={handleDownload}
-              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
               Download
             </button>
@@ -44,7 +44,7 @@ export default function ResultDisplay({ value, error }: ResultDisplayProps) {
         )}
       </div>
       {error ? (
-        <div className="w-full h-64 p-3 border border-red-300 dark:border-red-600 rounded-lg bg-red-50 dark:bg-red-900/20">
+        <div className="flex-1 w-full min-h-48 sm:min-h-56 lg:min-h-64 p-3 border border-red-300 dark:border-red-600 rounded-lg bg-red-50 dark:bg-red-900/20 overflow-auto">
           <p className="text-sm text-red-600 dark:text-red-400 font-semibold mb-2">Error:</p>
           <pre className="text-sm text-red-700 dark:text-red-300 whitespace-pre-wrap">{error}</pre>
         </div>
@@ -52,7 +52,7 @@ export default function ResultDisplay({ value, error }: ResultDisplayProps) {
         <textarea
           value={value}
           readOnly
-          className="w-full h-64 p-3 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 resize-y"
+          className="flex-1 w-full min-h-48 sm:min-h-56 lg:min-h-64 p-3 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 resize-y"
           placeholder="Deobfuscated output will appear here..."
           spellCheck={false}
         />
