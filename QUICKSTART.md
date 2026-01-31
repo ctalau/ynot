@@ -44,7 +44,7 @@ The project is pre-configured for Vercel deployment:
 - ✅ `next.config.mjs` - Static export enabled
 - ✅ `package.json` - Build scripts configured
 - ✅ `tsconfig.json` - TypeScript settings for Next.js
-- ✅ `tailwind.config.mjs` - Styling configured
+- ✅ `tailwind.config.cjs` - Styling configured
 - ✅ No `vercel.json` needed (uses Vercel defaults)
 
 ### Settings:

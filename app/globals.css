@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   color-scheme: light dark;
   --page-bg-start: #f9fafb;
